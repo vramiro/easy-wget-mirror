@@ -1,0 +1,5 @@
+old
+logs/*
+download
+*.pyc
+.DS_Store
