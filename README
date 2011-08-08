@@ -1,29 +1,33 @@
 Simple Mirror Utility
+---------------------
 
-This utility performs a wget based mirror:
+This utility performs a configurable wget based mirror:
 
 'wget --continue --no-clobber --no-host-directories --no-parent --recursive --no-verbose --accept <accepted list of files> --directory-prefix=/where/stuff/will/be/downloaded repo_url/repo_name --append-output=log_file'
 
--Installation:
+Installation:
+-------------
 
-git clone URL
+git clone 
+change config as you need (follow section)
 create a crontab entry as follows:
 
-# each day at 00:01
+# each day at 00:01 or whatever
 0 1 * * *      /complete/path/to/main.py
 
 Note: be sure that the user will have *chown* rights for the user in the configuration
 
--Configuration:
+Configuration:
+--------------
 
-*Default values
+-Default values
 
 [default]
 #mirror.active.list= semicolon separated values with section names
-mirror.active.list=mirrorA;mirroB
+mirror.active.list=mirrorA;mirrorB
 
-#plugin.active.list= semicolon separated values with plugins module names
-plugin.active.list= bandwidth
+#plugin.active.list= semicolon separated values with plugins module names (should be located at plugins folder)
+plugin.active.list= pluginA, pluginB
 
 #user= user owner for chmod the downloaded files
 user=_www
@@ -31,18 +35,18 @@ user=_www
 #wget.path= path to wget executable
 wget.path=/opt/local/bin/wget
 
-*Then, for each mirror name in mirror.active.list you should provide a section as follows:
+- Then, for each mirror name in mirror.active.list you should provide a section as follows:
 
 [repo_name]
 url= repo base url
 repositories= file with the repositories list, one repo per line. Saved in conf/
 files.pattern= mirror accepted file patters (*.some_extension)
-base= just used for expansion issues in the following two options
 destination= mirror downloads destination folder
 logs= mirror logs destination folder
 
 
--Author:
+Author:
+-------
 
 Victor Ramiro
 <vramiro@gmail.com>
