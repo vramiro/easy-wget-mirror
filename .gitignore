@@ -1,6 +1,6 @@
-old
-logs/*
+logs
 download
+tmp
 *.pyc
 .DS_Store
 *.repos
