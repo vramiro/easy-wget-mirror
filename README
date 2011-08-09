@@ -23,10 +23,10 @@ Configuration:
 -Default values
 
 [default]
-#mirror.active.list= semicolon separated values with section names
-mirror.active.list=mirrorA;mirrorB
+#mirror.active.list= comma separated values list with section names
+mirror.active.list=mirrorA, mirrorB
 
-#plugin.active.list= semicolon separated values with plugins module names (should be located at plugins folder)
+#plugin.active.list= comma separated values list with plugins module names (they should be located at plugins folder)
 plugin.active.list= pluginA, pluginB
 
 #user= user owner for chmod the downloaded files

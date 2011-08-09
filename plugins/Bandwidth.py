@@ -5,17 +5,17 @@ from warnings import warn
 from subprocess import *
 from MirrorPlugin import MirrorPlugin
 
+class BandwidthException(Exception): pass
+
 class Bandwidth(MirrorPlugin):
 
 	def __init__(self, *args, **kwargs):
-		if 'mirror' in kwargs:
+		try:
 			m = kwargs['mirror']
 			super(Bandwidth, self).__init__(m)
 			self.file = m.log_file
-		elif 'filename' in kwargs:
-			self.file = kwargs['filename']
-		else:
-			raise Exception
+		except Exception as e:
+			raise BandwidthException("Unable to init Bandwidth plugin: " + str(e))
 		
 	def __before__(self, buff): pass
 
@@ -40,18 +40,8 @@ class Bandwidth(MirrorPlugin):
 			max_bw = max(rbw, max_bw)
 			
 		avg_bw = bwsum/n
-
-		if not buff == None:
-			buff.write('Min bw:\t%s KB/s\n' % (min_bw))
-			buff.write('Avg bw:\t%s KB/s\n' % (avg_bw))
-			buff.write('Max bw:\t%s KB/s\n' % (max_bw))
+		buff.write('Min bw:\t%s KB/s\n' % (min_bw))
+		buff.write('Avg bw:\t%s KB/s\n' % (avg_bw))
+		buff.write('Max bw:\t%s KB/s\n' % (max_bw))
 		
 		return (min_bw, avg_bw, max_bw)
-
-if __name__ == "__main__":
-	for filename in sys.argv[1:]:
-		(minbw, avg, maxbw) = Bandwidth(filename=filename).__execute__(None)
-		print "bandwidth analysis for: " + filename
-		print "min: " + str(minbw) + " KB/s"
-		print "avg: " + str(avg) + " KB/s"
-		print "max: " + str(maxbw) + " KB/s"
