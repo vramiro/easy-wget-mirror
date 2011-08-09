@@ -58,6 +58,14 @@ user=_www
 #group= group owner for chmod the downloaded files
 group=_www
 
+[RunDate]
+#format= a valid python datetime format
+format=%Y/%m/%d %H:%M:%S
+
+[UpdateReposList]
+#update.repos.list= a list of comma separated entries. Each entry is mirrorName=>url
+update.repos.list=mirrorA=>http://foo/bar,mirrorB=>http://fooo/baar
+
 
 Author:
 -------

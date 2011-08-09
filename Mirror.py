@@ -9,7 +9,8 @@ class Mirror(object):
 			self.name = mirror_name
 			self.wget = wget_path
 			self.mirror_url = mirror_url
-			f = open(repos_file)
+                        self.repos_file = repos_file
+			f = open(self.repos_file)
 			self.repositories = f.read().split('\n')
 			self.accept_list = accept_list
 			self.destination = destination_path
