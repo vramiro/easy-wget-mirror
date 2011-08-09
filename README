@@ -8,12 +8,17 @@ This utility performs a configurable wget based mirror:
 Installation:
 -------------
 
-git clone 
-change config as you need (follow section)
-create a crontab entry as follows:
+git clone https://vramiro@github.com/vramiro/easy-wget-mirror.git
+change config as you need (check next section)
+
+run manually:
+
+./easy-wget-mirror ./conf/easy-wget-mirror.conf
+
+run with crontab
 
 # each day at 00:01 or whatever
-0 1 * * *      /complete/path/to/main.py
+0 1 * * *      /complete/path/to/main.py /complete/path/to/config
 
 Note: be sure that the user will have *chown* rights for the user in the configuration
 
