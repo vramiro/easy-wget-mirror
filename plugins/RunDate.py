@@ -14,7 +14,8 @@ class RunDate(MirrorPlugin):
             raise RunDateException("Unable to init RunDate plugin: " + str(e))
 
     def __before__(self, buff):
-        buff.write('Run Date:\t%s\n' % self.mirror.run_date.strftime('%Y/%m/%d'))
+        buff.write('Run Date:\t%s\n' %
+                   self.mirror.run_date.strftime('%Y/%m/%d %H:%M:%S'))
     
     def __after__(self, buff):
         pass
