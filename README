@@ -22,15 +22,12 @@ Configuration:
 
 -Default values
 
-[default]
+[easy-wget-mirror]
 #mirror.active.list= comma separated values list with section names
 mirror.active.list=mirrorA, mirrorB
 
 #plugin.active.list= comma separated values list with plugins module names (they should be located at plugins folder)
 plugin.active.list= pluginA, pluginB
-
-#user= user owner for chmod the downloaded files
-user=_www
 
 #wget.path= path to wget executable
 wget.path=/opt/local/bin/wget
@@ -43,6 +40,18 @@ repositories= file with the repositories list, one repo per line. Saved in conf/
 files.pattern= mirror accepted file patters (*.some_extension)
 destination= mirror downloads destination folder
 logs= mirror logs destination folder
+
+- Each plugin could have special configs. by now:
+
+[RemoveFiles]
+#patterns= a list of separated comma values with a valid python regular expresion
+patterns = '^@.*','*.html$'
+
+[ChangeOwner]
+#user= user owner for chmod the downloaded files
+user=_www
+#group= group owner for chmod the downloaded files
+group=_www
 
 
 Author:
