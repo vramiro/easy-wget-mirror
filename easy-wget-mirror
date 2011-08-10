@@ -41,7 +41,8 @@ def run(config, mirror_name, wget_path, mirror_url, repos_file, accept_list,
 			try:
 				plugin.__before__(plugins_buff)
 			except Exception as e:
-				warn("Failed to execute __before__ in %s with: %s" % (plugin.__class__.__name__, str(e)))
+				s = "Failed to execute __before__ in %s with: %s" % (plugin.__class__.__name__, str(e))
+				warn(s)
 
 		# write logs with __before__ output
 		runlog.write(plugins_buff.getvalue())
@@ -50,15 +51,17 @@ def run(config, mirror_name, wget_path, mirror_url, repos_file, accept_list,
 
 		try:
 			m.update()
-		except MirrorUpdateException:
-			warn("Failed Update for %s. Check logs files at %s and %s" % (mirror_name, m.log_run, m.log_file))
+		except MirrorUpdateException as e:
+			s = "Failed Update for %s. Check logs files at %s and %s" % (mirror_name, m.log_run, m.log_file)
+			warn(s)
 
 		## Plugins __after__ call
 		for plugin in plugins:
 			try:
 				plugin.__after__(plugins_buff)
 			except Exception as e:
-				warn("Failed to execute __after__ in %s with: %s" % (plugin.__class__.__name__, str(e)))
+				s = "Failed to execute __after__ in %s with: %s" % (plugin.__class__.__name__, str(e))
+				warn(s)
 
 		# write logs with __after__ output
 		runlog.write(plugins_buff.getvalue())
@@ -66,7 +69,8 @@ def run(config, mirror_name, wget_path, mirror_url, repos_file, accept_list,
 		runlog.close()
 		
 	except MirrorInitException as e:
-		warn("Failed to create mirror: %s. No update performed" % (mirror_name))
+		s = "Failed to create mirror: %s. No update performed (%s)" % (mirror_name, str(e))
+		warn(s)
 
 	
 #########

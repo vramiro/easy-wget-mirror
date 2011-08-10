@@ -15,22 +15,23 @@ class UpdateReposList(MirrorPlugin):
 			self.repos_file = self.mirror.repos_file
 			repos_list = config.get(UpdateReposList.__name__,'update.repos.list').split(',')
 			# [file=>url,?]+
-			self.update_repos_list = map(lambda entry:
-						     (lambda e: (e[0], e[1]))(entry.split('=>')),
-						     repos_list)			
+			self.update_repos_list = {}
+			for entry in repos_list:
+				e = entry.split('=>')
+				self.update_repos_list[e[0]] = e[1]
 		except Exception as e:
 			raise UpdateReposListException("Unable to init UpdateReposList plugin: " + str(e))
 		
-	def __before__(self, buff):		
-		for (repo_name, url) in self.update_repos_list:
-			if self.mirror.name == repo_name:
-				url_obj = urlparse(url)
-				conn = httplib.HTTPConnection(url_obj.netloc)
-				conn.request('GET', url_obj.path)
-				response = conn.getresponse()
-				if response.status == 200:
-					repo_file = open(self.mirror.repos_file, 'w')
-					repo_file.write(response.read())
+	def __before__(self, buff):
+		if self.mirror.name in self.update_repos_list:
+			(repo_name, url) = (self.mirror.name, self.update_repos_list[self.mirror.name])
+			url_obj = urlparse(url)
+			conn = httplib.HTTPConnection(url_obj.netloc)
+			conn.request('GET', url_obj.path)
+			response = conn.getresponse()
+			if response.status == 200:
+				repo_file = open(self.mirror.repos_file, 'w')
+				repo_file.write(response.read())
 
 	def __after__(self, buff):
 		pass
