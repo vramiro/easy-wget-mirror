@@ -30,8 +30,48 @@ class UpdateReposList(MirrorPlugin):
 			conn.request('GET', url_obj.path)
 			response = conn.getresponse()
 			if response.status == 200:
+
+				data = response.read()
+				handler = None
+				if url.endswith(".txt"):
+					handler = UpdateFromTextHandler(data)
+				elif url.endswith(".xml.gz"):
+					handler = UpdateFromSiteMapHandler(data)
+					
+				handled_data = handler.handle()
 				repo_file = open(self.mirror.repos_file, 'w')
-				repo_file.write(response.read())
+				repo_file.write(handled_data)
 
 	def __after__(self, buff):
 		pass
+
+
+class UpdateFrom:
+	def __init__(self, data):
+		self.data = data
+
+class UpdateFromTextList(UpdateFrom):
+	def __handle__(self):
+		return self.data
+
+class UpdateFromSiteMap(UpdateFrom):
+	import zlib, xml.dom.minidom
+
+	def handle(self):
+		uncompressed_buffer = zlib.decompress(self.data)
+		xmlTraverser = SiteMapXMLTraverser(uncompressed_buffer)
+		return xmlTraverser.getContents()
+		
+	class SiteMapXMLTraverser:
+		def __init__(self, xml):		
+			self.doc = xml.dom.minidom.parseString(xml)
+
+		def getContents(self):
+			buff = ""
+			urlSet = doc.getElementsByTagName("urlset")
+			for urlNode in urlSet.getElementsByTagName("url"):
+				url = getText(urlNode.getElementsByTagName("loc")[0].data)
+				buff.append(url)
+			return buff
+
+

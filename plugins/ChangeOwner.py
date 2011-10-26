@@ -25,7 +25,7 @@ class ChangeOwner(MirrorPlugin):
             self.gid = group.gr_gid
             
         except Exception as e:
-            raise ChangeOwnerShipException("Unable to init ChangeOwner plugin: " + str(e))
+            raise ChangeOwnerException("Unable to init ChangeOwner plugin: " + str(e))
 
     def __before__(self, buff):
         pass
