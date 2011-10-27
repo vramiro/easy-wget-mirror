@@ -30,17 +30,19 @@ class UpdateReposList(MirrorPlugin):
 			conn.request('GET', url_obj.path)
 			response = conn.getresponse()
 			if response.status == 200:
-
 				data = response.read()
 				handler = None
+
+				# TODO: improve this in a factory method?
 				if url.endswith(".txt"):
 					handler = UpdateFromTextHandler(data)
 				elif url.endswith(".xml.gz"):
 					handler = UpdateFromSiteMapHandler(data)
-					
+	      
 				handled_data = handler.handle()
 				repo_file = open(self.mirror.repos_file, 'w')
 				repo_file.write(handled_data)
+
 
 	def __after__(self, buff):
 		pass

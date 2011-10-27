@@ -34,7 +34,6 @@ def run(config, mirror_name, wget_path, mirror_url, repos_file, accept_list,
 			exit("Unable to load plugins: " + str(e))
 
 		plugins_buff = StringIO()
-		runlog = open(m.log_run, 'a')
 
 		## Plugins __before__ call
 		for plugin in plugins:
@@ -45,6 +44,7 @@ def run(config, mirror_name, wget_path, mirror_url, repos_file, accept_list,
 				warn(s)
 
 		# write logs with __before__ output
+		runlog = open(m.log_run, 'a')
 		runlog.write(plugins_buff.getvalue())
 		runlog.flush()
 		plugins_buff = StringIO()
