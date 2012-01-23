@@ -35,13 +35,16 @@ class UpdateReposList(MirrorPlugin):
 
 				# TODO: improve this in a factory method?
 				if url.endswith(".txt"):
-					handler = UpdateFromTextHandler(data)
+					handler = UpdateFromTextList(data)
 				elif url.endswith(".xml.gz"):
-					handler = UpdateFromSiteMapHandler(data)
-	      
+					handler = UpdateFromSiteMap(data)
+				else: 
+					raise UpdateReposListException("Unable to handle data type: " + url)
+
 				handled_data = handler.handle()
 				repo_file = open(self.mirror.repos_file, 'w')
 				repo_file.write(handled_data)
+				repo_file.close()
 
 
 	def __after__(self, buff):
@@ -56,24 +59,40 @@ class UpdateFromTextList(UpdateFrom):
 	def __handle__(self):
 		return self.data
 
-class UpdateFromSiteMap(UpdateFrom):
-	import zlib, xml.dom.minidom
+import xml.dom.minidom, tempfile, subprocess, re
 
-	def handle(self):
-		uncompressed_buffer = zlib.decompress(self.data)
-		xmlTraverser = SiteMapXMLTraverser(uncompressed_buffer)
-		return xmlTraverser.getContents()
+class UpdateFromSiteMap(UpdateFrom):
 		
 	class SiteMapXMLTraverser:
-		def __init__(self, xml):		
-			self.doc = xml.dom.minidom.parseString(xml)
+		def __init__(self, xmlStr):
+			self.doc = xml.dom.minidom.parseString(xmlStr)
 
 		def getContents(self):
-			buff = ""
-			urlSet = doc.getElementsByTagName("urlset")
+			buff = []
+			m = re.compile('http:\/\/(.*)\/(\w+)\/?')
+			urlSet = self.doc.getElementsByTagName("urlset")[0]
 			for urlNode in urlSet.getElementsByTagName("url"):
-				url = getText(urlNode.getElementsByTagName("loc")[0].data)
-				buff.append(url)
+				url = self.getText(urlNode.getElementsByTagName("loc")[0].childNodes)
+				res = m.match(url)
+				if None != res: buff.append(res.group(2)) 
+			buff.sort()
 			return buff
 
+		def getText(self, nodelist):
+			rc = []
+			for node in nodelist:
+				if node.nodeType == node.TEXT_NODE:
+					rc.append(node.data)
+			return ''.join(rc)
+
+	def handle(self):
+		(f, tmpname) = tempfile.mkstemp()
+		os.write(f,self.data)
+		os.close(f)
+		uncompressed_buffer = subprocess.Popen(['gzcat', tmpname], stdout=subprocess.PIPE).communicate()[0]
+		xmlTraverser = UpdateFromSiteMap.SiteMapXMLTraverser(uncompressed_buffer)
+		repos = xmlTraverser.getContents()
+		print repos
+		os.unlink(tmpname)
+		return '\n'.join(repos)
 
